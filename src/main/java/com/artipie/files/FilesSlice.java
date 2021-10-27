@@ -32,6 +32,7 @@ import com.artipie.http.auth.BasicAuthSlice;
 import com.artipie.http.auth.Permission;
 import com.artipie.http.auth.Permissions;
 import com.artipie.http.headers.ContentType;
+import com.artipie.http.rq.RqMethod;
 import com.artipie.http.rs.RsStatus;
 import com.artipie.http.rs.RsWithStatus;
 import com.artipie.http.rt.ByMethodsRule;
@@ -53,6 +54,11 @@ import com.artipie.http.slice.SliceWithHeaders;
 public final class FilesSlice extends Slice.Wrap {
 
     /**
+     * Content type of file.
+     */
+    private static final String CONTENT_TYPE = "application/octet-stream";
+
+    /**
      * Ctor.
      * @param storage The storage. And default parameters for free access.
      */
@@ -70,11 +76,22 @@ public final class FilesSlice extends Slice.Wrap {
         super(
             new SliceRoute(
                 new RtRulePath(
+                    new ByMethodsRule(RqMethod.HEAD),
+                    new BasicAuthSlice(
+                        new SliceWithHeaders(
+                            new BlobMetadataSlice(storage),
+                            new Headers.From(new ContentType(FilesSlice.CONTENT_TYPE))
+                        ),
+                        auth,
+                        new Permission.ByName(perms, Action.Standard.READ)
+                    )
+                ),
+                new RtRulePath(
                     ByMethodsRule.Standard.GET,
                     new BasicAuthSlice(
                         new SliceWithHeaders(
                             new SliceDownload(storage),
-                            new Headers.From(new ContentType("application/octet-stream"))
+                            new Headers.From(new ContentType(FilesSlice.CONTENT_TYPE))
                         ),
                         auth,
                         new Permission.ByName(perms, Action.Standard.READ)
