@@ -27,7 +27,7 @@ SOFTWARE.
   <parent>
     <groupId>com.artipie</groupId>
     <artifactId>ppom</artifactId>
-    <version>0.5.1</version>
+    <version>1.0.4</version>
   </parent>
   <artifactId>files-adapter</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -44,20 +44,30 @@ SOFTWARE.
   </licenses>
   <developers>
     <developer>
-      <id>1</id>
+      <id>g4s8</id>
+      <name>Kirill Che.</name>
+      <email>g4s8.public@gmail.com</email>
+      <organization>Artipie</organization>
+      <organizationUrl>https://www.artipie.com</organizationUrl>
+      <roles>
+        <role>maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
       <name>Yegor Bugayenko</name>
       <email>yegor256@gmail.com</email>
       <organization>yegor256.com</organization>
       <organizationUrl>https://www.yegor256.com</organizationUrl>
       <roles>
-        <role>Architect</role>
         <role>Developer</role>
       </roles>
       <timezone>+1</timezone>
-    </developer>
-  </developers>
+    </contributor>
+  </contributors>
   <issueManagement>
-    <system>GitHub</system>
+    <system>GitHub issues</system>
     <url>https://github.com/artipie/files-adapter/issues</url>
   </issueManagement>
   <scm>
@@ -66,8 +76,8 @@ SOFTWARE.
     <url>https://github.com/artipie/files-adapter</url>
   </scm>
   <ciManagement>
-    <system>rultor</system>
-    <url>https://www.rultor.com/s/files-adapter</url>
+    <system>GitHub actions</system>
+    <url>https://github.com/artipie/files-adapter/actions/workflows/maven.yml</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -77,25 +87,25 @@ SOFTWARE.
   </distributionManagement>
   <dependencies>
     <dependency>
-      <groupId>org.cactoos</groupId>
-      <artifactId>cactoos</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.artipie</groupId>
       <artifactId>asto</artifactId>
       <version>v1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.artipie</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.3.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.artipie</groupId>
+      <artifactId>http</artifactId>
+      <version>v0.25</version>
     </dependency>
     <!-- Test only dependencies -->
     <dependency>
       <groupId>com.artipie</groupId>
       <artifactId>vertx-server</artifactId>
-      <version>0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-web-client</artifactId>
-      <version>${vertx.version}</version>
+      <version>0.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -121,14 +131,10 @@ SOFTWARE.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.artipie</groupId>
-      <artifactId>http</artifactId>
-      <version>v0.25</version>
-    </dependency>
-    <dependency>
-      <groupId>com.artipie</groupId>
-      <artifactId>http-client</artifactId>
-      <version>0.3.6</version>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web-client</artifactId>
+      <version>${vertx.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
