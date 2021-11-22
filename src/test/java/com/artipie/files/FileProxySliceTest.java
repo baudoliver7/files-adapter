@@ -34,6 +34,7 @@ import com.artipie.http.Headers;
 import com.artipie.http.Slice;
 import com.artipie.http.async.AsyncResponse;
 import com.artipie.http.client.ClientSlices;
+import com.artipie.http.headers.Header;
 import com.artipie.http.hm.RsHasBody;
 import com.artipie.http.hm.RsHasHeaders;
 import com.artipie.http.hm.RsHasStatus;
@@ -49,7 +50,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
-import org.cactoos.map.MapEntry;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsEmptyIterable;
@@ -133,9 +133,9 @@ final class FileProxySliceTest {
                 Matchers.allOf(
                     new RsHasBody(body),
                     new RsHasHeaders(
-                        new MapEntry<>("header", "value"),
-                        new MapEntry<>("Content-Length", "4"),
-                        new MapEntry<>("Content-Length", "4")
+                        new Header("header", "value"),
+                        new Header("Content-Length", "4"),
+                        new Header("Content-Length", "4")
                     )
                 ),
                 new RequestLine(RqMethod.GET, String.format("/%s", key))
@@ -163,7 +163,7 @@ final class FileProxySliceTest {
                 Matchers.allOf(
                     new RsHasStatus(RsStatus.OK), new RsHasBody(body),
                     new RsHasHeaders(
-                        new MapEntry<>("Content-Length", String.valueOf(body.length))
+                        new Header("Content-Length", String.valueOf(body.length))
                     )
                 ),
                 new RequestLine(RqMethod.GET, String.format("/%s", key))

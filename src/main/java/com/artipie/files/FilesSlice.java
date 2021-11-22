@@ -39,6 +39,7 @@ import com.artipie.http.rt.ByMethodsRule;
 import com.artipie.http.rt.RtRule;
 import com.artipie.http.rt.RtRulePath;
 import com.artipie.http.rt.SliceRoute;
+import com.artipie.http.slice.HeadSlice;
 import com.artipie.http.slice.SliceDelete;
 import com.artipie.http.slice.SliceDownload;
 import com.artipie.http.slice.SliceSimple;
@@ -79,7 +80,7 @@ public final class FilesSlice extends Slice.Wrap {
                     new ByMethodsRule(RqMethod.HEAD),
                     new BasicAuthSlice(
                         new SliceWithHeaders(
-                            new BlobMetadataSlice(storage),
+                            new HeadSlice(storage),
                             new Headers.From(new ContentType(FilesSlice.CONTENT_TYPE))
                         ),
                         auth,
