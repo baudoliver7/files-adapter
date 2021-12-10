@@ -31,6 +31,7 @@ import com.artipie.http.auth.Authentication;
 import com.artipie.http.auth.BasicAuthSlice;
 import com.artipie.http.auth.Permission;
 import com.artipie.http.auth.Permissions;
+import com.artipie.http.headers.Accept;
 import com.artipie.http.headers.ContentType;
 import com.artipie.http.rq.RqMethod;
 import com.artipie.http.rs.RsStatus;
@@ -45,19 +46,32 @@ import com.artipie.http.slice.SliceDownload;
 import com.artipie.http.slice.SliceSimple;
 import com.artipie.http.slice.SliceUpload;
 import com.artipie.http.slice.SliceWithHeaders;
+import java.util.regex.Pattern;
 
 /**
  * A {@link Slice} which servers binary files.
  *
  * @since 0.1
+ * @todo #77:30min Test FileSlice when listing blobs by prefix in plain text.
+ *  We previously introduced {@link ListBlobsSlice} and {@link BlobListPlainTextFormat}
+ *  to list blobs in `text/plain` from a prefix. We should now test that the type
+ *  and value of response's content are correct when we make a request.
+ * @todo #77:30min Add support for other mime types when listing blobs by prefix.
+ *  We already add support for `text/plain`. We should also add support for mime type
+ *  `text/html` and `application/json`.
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class FilesSlice extends Slice.Wrap {
 
     /**
-     * Content type of file.
+     * Mime type of file.
      */
-    private static final String CONTENT_TYPE = "application/octet-stream";
+    private static final String OCTET_STREAM = "application/octet-stream";
+
+    /**
+     * Plain text mime type.
+     */
+    private static final String PLAIN_TEXT = "text/plain";
 
     /**
      * Ctor.
@@ -81,7 +95,7 @@ public final class FilesSlice extends Slice.Wrap {
                     new BasicAuthSlice(
                         new SliceWithHeaders(
                             new HeadSlice(storage),
-                            new Headers.From(new ContentType(FilesSlice.CONTENT_TYPE))
+                            new Headers.From(new ContentType(FilesSlice.OCTET_STREAM))
                         ),
                         auth,
                         new Permission.ByName(perms, Action.Standard.READ)
@@ -90,9 +104,24 @@ public final class FilesSlice extends Slice.Wrap {
                 new RtRulePath(
                     ByMethodsRule.Standard.GET,
                     new BasicAuthSlice(
-                        new SliceWithHeaders(
-                            new SliceDownload(storage),
-                            new Headers.From(new ContentType(FilesSlice.CONTENT_TYPE))
+                        new SliceRoute(
+                            new RtRulePath(
+                                new RtRule.ByHeader(
+                                    Accept.NAME,
+                                    Pattern.compile(FilesSlice.PLAIN_TEXT)
+                                ),
+                                new ListBlobsSlice(
+                                    storage, new BlobListPlainTextFormat(),
+                                    FilesSlice.PLAIN_TEXT
+                                )
+                            ),
+                            new RtRulePath(
+                                RtRule.FALLBACK,
+                                new SliceWithHeaders(
+                                    new SliceDownload(storage),
+                                    new Headers.From(new ContentType(FilesSlice.OCTET_STREAM))
+                                )
+                            )
                         ),
                         auth,
                         new Permission.ByName(perms, Action.Standard.READ)
