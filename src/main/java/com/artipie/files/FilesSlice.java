@@ -52,10 +52,6 @@ import java.util.regex.Pattern;
  * A {@link Slice} which servers binary files.
  *
  * @since 0.1
- * @todo #77:30min Test FileSlice when listing blobs by prefix in plain text.
- *  We previously introduced {@link ListBlobsSlice} and {@link BlobListPlainTextFormat}
- *  to list blobs in `text/plain` from a prefix. We should now test that the type
- *  and value of response's content are correct when we make a request.
  * @todo #77:30min Add support for other mime types when listing blobs by prefix.
  *  We already add support for `text/plain`. We should also add support for mime type
  *  `text/html` and `application/json`.
@@ -64,14 +60,14 @@ import java.util.regex.Pattern;
 public final class FilesSlice extends Slice.Wrap {
 
     /**
+     * Plain text mime type.
+     */
+    public static final String PLAIN_TEXT = "text/plain";
+
+    /**
      * Mime type of file.
      */
     private static final String OCTET_STREAM = "application/octet-stream";
-
-    /**
-     * Plain text mime type.
-     */
-    private static final String PLAIN_TEXT = "text/plain";
 
     /**
      * Ctor.

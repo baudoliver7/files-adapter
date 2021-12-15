@@ -30,13 +30,18 @@ import com.artipie.asto.memory.InMemoryStorage;
 import com.artipie.vertx.VertxSliceServer;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.buffer.Buffer;
+import io.vertx.reactivex.ext.web.client.HttpResponse;
 import io.vertx.reactivex.ext.web.client.WebClient;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests for files adapter.
@@ -150,6 +155,40 @@ final class FileSliceITCase {
                 StandardCharsets.UTF_8
             ),
             new IsEqual<>(hello)
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = { "/foo/bar", "/foo/bar/" })
+    void testBlobListInPlainText(final String uri) {
+        final WebClient web = WebClient.create(this.vertx);
+        final BlockingStorage sto = new BlockingStorage(this.storage);
+        final String fone = "foo/bar/file1.txt";
+        sto.save(new Key.From(fone), "file 1 content".getBytes());
+        final String ftwo = "foo/bar/file2.txt";
+        sto.save(new Key.From(ftwo), "file 2 content".getBytes());
+        final String fthree = "foo/bar/file3.txt";
+        sto.save(new Key.From(fthree), "file 3 content".getBytes());
+        final HttpResponse<Buffer> response = web.get(this.port, FileSliceITCase.HOST, uri)
+            .putHeader("Accept", FilesSlice.PLAIN_TEXT)
+            .rxSend()
+            .blockingGet();
+        MatcherAssert.assertThat(
+            "Blobs should be listed in plain text.",
+            new String(
+                response.bodyAsBuffer().getBytes(),
+                StandardCharsets.UTF_8
+            ),
+            new IsEqual<>(
+                Arrays.asList(fone, ftwo, fthree)
+                    .stream()
+                    .collect(Collectors.joining("\n"))
+            )
+        );
+        MatcherAssert.assertThat(
+            "Content type should be in plain text.",
+            response.headers().get("Content-Type"),
+            new IsEqual<>(FilesSlice.PLAIN_TEXT)
         );
     }
 
