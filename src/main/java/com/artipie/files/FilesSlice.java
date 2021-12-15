@@ -52,9 +52,13 @@ import java.util.regex.Pattern;
  * A {@link Slice} which servers binary files.
  *
  * @since 0.1
- * @todo #77:30min Add support for other mime types when listing blobs by prefix.
- *  We already add support for `text/plain`. We should also add support for mime type
- *  `text/html` and `application/json`.
+ * @todo #91:30min Add support for `text/html` mime type.
+ *  We already add support for `text/plain` and `application/json`.
+ *  We should also add support for mime type `text/html`.
+ * @todo #91:30min Test FileSlice when listing blobs by prefix in JSON.
+ *  We previously introduced {@link BlobListJsonFormat}
+ *  to list blobs in JSON from a prefix. We should now test that the type
+ *  and value of response's content are correct when we make a request.
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class FilesSlice extends Slice.Wrap {
@@ -68,6 +72,11 @@ public final class FilesSlice extends Slice.Wrap {
      * Mime type of file.
      */
     private static final String OCTET_STREAM = "application/octet-stream";
+
+    /**
+     * JavaScript Object Notation mime type.
+     */
+    private static final String JSON = "application/json";
 
     /**
      * Ctor.
@@ -109,6 +118,16 @@ public final class FilesSlice extends Slice.Wrap {
                                 new ListBlobsSlice(
                                     storage, new BlobListPlainTextFormat(),
                                     FilesSlice.PLAIN_TEXT
+                                )
+                            ),
+                            new RtRulePath(
+                                new RtRule.ByHeader(
+                                    Accept.NAME,
+                                    Pattern.compile(FilesSlice.JSON)
+                                ),
+                                new ListBlobsSlice(
+                                    storage, new BlobListJsonFormat(),
+                                    FilesSlice.JSON
                                 )
                             ),
                             new RtRulePath(
