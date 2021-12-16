@@ -116,7 +116,8 @@ public final class FilesSlice extends Slice.Wrap {
                                     Pattern.compile(FilesSlice.PLAIN_TEXT)
                                 ),
                                 new ListBlobsSlice(
-                                    storage, new BlobListPlainTextFormat(),
+                                    storage,
+                                    BlobListFormat.Standard.TEXT,
                                     FilesSlice.PLAIN_TEXT
                                 )
                             ),
@@ -126,7 +127,8 @@ public final class FilesSlice extends Slice.Wrap {
                                     Pattern.compile(FilesSlice.JSON)
                                 ),
                                 new ListBlobsSlice(
-                                    storage, new BlobListJsonFormat(),
+                                    storage,
+                                    BlobListFormat.Standard.JSON,
                                     FilesSlice.JSON
                                 )
                             ),
