@@ -24,6 +24,7 @@
 package com.artipie.files;
 
 import com.artipie.asto.Storage;
+import com.artipie.asto.memory.InMemoryStorage;
 import com.artipie.http.Headers;
 import com.artipie.http.Slice;
 import com.artipie.http.auth.Action;
@@ -46,6 +47,7 @@ import com.artipie.http.slice.SliceDownload;
 import com.artipie.http.slice.SliceSimple;
 import com.artipie.http.slice.SliceUpload;
 import com.artipie.http.slice.SliceWithHeaders;
+import com.artipie.vertx.VertxSliceServer;
 import java.util.regex.Pattern;
 
 /**
@@ -166,5 +168,18 @@ public final class FilesSlice extends Slice.Wrap {
                 )
             )
         );
+    }
+
+    /**
+     * Entry point.
+     * @param args Command line args
+     */
+    public static void main(final String... args) {
+        final int port = 8080;
+        final VertxSliceServer server = new VertxSliceServer(
+            new FilesSlice(new InMemoryStorage(), Permissions.FREE, Authentication.ANONYMOUS),
+            port
+        );
+        server.start();
     }
 }

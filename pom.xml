@@ -121,7 +121,6 @@ SOFTWARE.
       <groupId>com.artipie</groupId>
       <artifactId>vertx-server</artifactId>
       <version>0.5</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

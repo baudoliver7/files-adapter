@@ -19,6 +19,16 @@ This is the dependency you need:
 Read the [Javadoc](http://www.javadoc.io/doc/com.artipie/files-adapter)
 for more technical details.
 
+## Running
+
+For simple cases or for debugging you may want to start files-adapter as HTTP server.
+Just build it and start with:
+```bash
+mvn package dependency:copy-dependencies
+java -cp "target/files-adapter-1.0-SNAPSHOT.jar:target/dependency/*" com.artipie.files.FilesSlice
+```
+This command builds service and start it with in-memory storage on localhost on `8080` port.
+
 ## How to contribute
 
 Fork repository, make changes, send us a pull request. We will review
