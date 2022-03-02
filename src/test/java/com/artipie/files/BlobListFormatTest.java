@@ -37,6 +37,7 @@ import wtf.g4s8.hamcrest.json.StringIsJson;
  * Test case for {@link BlobListFormat}.
  * @since 1.0
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 final class BlobListFormatTest {
 
     @Test
@@ -86,6 +87,56 @@ final class BlobListFormatTest {
         MatcherAssert.assertThat(
             BlobListFormat.Standard.JSON.apply(Collections.emptyList()),
             new StringIsJson.Array(new JsonContains())
+        );
+    }
+
+    @Test
+    void formatHtmlKeys() {
+        MatcherAssert.assertThat(
+            BlobListFormat.Standard.HTML.apply(
+                Arrays.asList(
+                    new Key.From("foo/barx", "file1.log"),
+                    new Key.From("foo/bary", "file2.log"),
+                    new Key.From("foo/barz", "file3.log")
+                )
+            ),
+            Matchers.is(
+                String.join(
+                    "\n",
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "  <head><meta charset=\"utf-8\"/></head>",
+                    "  <body>",
+                    "    <ul>",
+                    "      <li><a href=\"/foo/barx/file1.log\">foo/barx/file1.log</a></li>",
+                    "      <li><a href=\"/foo/bary/file2.log\">foo/bary/file2.log</a></li>",
+                    "      <li><a href=\"/foo/barz/file3.log\">foo/barz/file3.log</a></li>",
+                    "    </ul>",
+                    "  </body>",
+                    "</html>"
+                )
+            )
+        );
+    }
+
+    @Test
+    void formatHtmlEmptyKeys() {
+        MatcherAssert.assertThat(
+            BlobListFormat.Standard.HTML.apply(Collections.emptyList()),
+            Matchers.is(
+                String.join(
+                    "\n",
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "  <head><meta charset=\"utf-8\"/></head>",
+                    "  <body>",
+                    "    <ul>",
+                    "",
+                    "    </ul>",
+                    "  </body>",
+                    "</html>"
+                )
+            )
         );
     }
 }

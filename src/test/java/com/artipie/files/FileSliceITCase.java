@@ -27,6 +27,8 @@ import com.artipie.asto.Key;
 import com.artipie.asto.Storage;
 import com.artipie.asto.blocking.BlockingStorage;
 import com.artipie.asto.memory.InMemoryStorage;
+import com.artipie.http.headers.Accept;
+import com.artipie.http.headers.ContentType;
 import com.artipie.vertx.VertxSliceServer;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.buffer.Buffer;
@@ -170,7 +172,7 @@ final class FileSliceITCase {
         final String fthree = "foo/bar/file3.txt";
         sto.save(new Key.From(fthree), "file 3 content".getBytes());
         final HttpResponse<Buffer> response = web.get(this.port, FileSliceITCase.HOST, uri)
-            .putHeader("Accept", FilesSlice.PLAIN_TEXT)
+            .putHeader(Accept.NAME, FilesSlice.PLAIN_TEXT)
             .rxSend()
             .blockingGet();
         MatcherAssert.assertThat(
@@ -187,8 +189,50 @@ final class FileSliceITCase {
         );
         MatcherAssert.assertThat(
             "Content type should be in plain text.",
-            response.headers().get("Content-Type"),
+            response.headers().get(ContentType.NAME),
             new IsEqual<>(FilesSlice.PLAIN_TEXT)
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = { "/foo/barz", "/foo/barz/" })
+    void testBlobListInHmlText(final String uri) {
+        final WebClient web = WebClient.create(this.vertx);
+        final BlockingStorage sto = new BlockingStorage(this.storage);
+        sto.save(new Key.From("foo/barz/file1.txt"), "Content 1".getBytes());
+        sto.save(new Key.From("foo/barz/file2.txt"), "Content 2".getBytes());
+        sto.save(new Key.From("foo/barz/file3.txt"), "Content 3".getBytes());
+        final HttpResponse<Buffer> response = web.get(this.port, FileSliceITCase.HOST, uri)
+            .putHeader(Accept.NAME, FilesSlice.HTML_TEXT)
+            .rxSend()
+            .blockingGet();
+        MatcherAssert.assertThat(
+            "Blobs should be listed in HTML text.",
+            new String(
+                response.bodyAsBuffer().getBytes(),
+                StandardCharsets.UTF_8
+            ),
+            new IsEqual<>(
+                String.join(
+                    "\n",
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "  <head><meta charset=\"utf-8\"/></head>",
+                    "  <body>",
+                    "    <ul>",
+                    "      <li><a href=\"/foo/barz/file1.txt\">foo/barz/file1.txt</a></li>",
+                    "      <li><a href=\"/foo/barz/file2.txt\">foo/barz/file2.txt</a></li>",
+                    "      <li><a href=\"/foo/barz/file3.txt\">foo/barz/file3.txt</a></li>",
+                    "    </ul>",
+                    "  </body>",
+                    "</html>"
+                )
+            )
+        );
+        MatcherAssert.assertThat(
+            "Content type should be in HTML text.",
+            response.headers().get(ContentType.NAME),
+            new IsEqual<>(FilesSlice.HTML_TEXT)
         );
     }
 

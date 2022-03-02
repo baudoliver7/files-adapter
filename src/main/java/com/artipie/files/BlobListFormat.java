@@ -59,6 +59,33 @@ interface BlobListFormat {
             keys -> Json.createArrayBuilder(
                 keys.stream().map(Key::string).collect(Collectors.toList())
             ).build().toString()
+        ),
+
+        /**
+         * HTML format renders keys as simple markdown with ul, li and a tags.
+         */
+        HTML(
+            keys -> String.format(
+                String.join(
+                    "\n",
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "  <head><meta charset=\"utf-8\"/></head>",
+                    "  <body>",
+                    "    <ul>",
+                    "%s",
+                    "    </ul>",
+                    "  </body>",
+                    "</html>"
+                ),
+                keys.stream().map(
+                    key -> String.format(
+                        "      <li><a href=\"/%s\">%s</a></li>",
+                        key.string(),
+                        key.string()
+                    )
+                ).collect(Collectors.joining("\n"))
+            )
         );
 
         /**

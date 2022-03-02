@@ -54,9 +54,6 @@ import java.util.regex.Pattern;
  * A {@link Slice} which servers binary files.
  *
  * @since 0.1
- * @todo #91:30min Add support for `text/html` mime type.
- *  We already add support for `text/plain` and `application/json`.
- *  We should also add support for mime type `text/html`.
  * @todo #91:30min Test FileSlice when listing blobs by prefix in JSON.
  *  We previously introduced {@link BlobListJsonFormat}
  *  to list blobs in JSON from a prefix. We should now test that the type
@@ -64,6 +61,11 @@ import java.util.regex.Pattern;
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class FilesSlice extends Slice.Wrap {
+
+    /**
+     * HTML mime type.
+     */
+    public static final String HTML_TEXT = "text/html";
 
     /**
      * Plain text mime type.
@@ -132,6 +134,17 @@ public final class FilesSlice extends Slice.Wrap {
                                     storage,
                                     BlobListFormat.Standard.JSON,
                                     FilesSlice.JSON
+                                )
+                            ),
+                            new RtRulePath(
+                                new RtRule.ByHeader(
+                                    Accept.NAME,
+                                    Pattern.compile(FilesSlice.HTML_TEXT)
+                                ),
+                                new ListBlobsSlice(
+                                    storage,
+                                    BlobListFormat.Standard.HTML,
+                                    FilesSlice.HTML_TEXT
                                 )
                             ),
                             new RtRulePath(
