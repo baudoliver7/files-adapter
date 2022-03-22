@@ -103,7 +103,10 @@ public final class FilesSlice extends Slice.Wrap {
                     new ByMethodsRule(RqMethod.HEAD),
                     new BasicAuthSlice(
                         new SliceWithHeaders(
-                            new HeadSlice(storage),
+                            new FileMetaSlice(
+                                new HeadSlice(storage),
+                                storage
+                            ),
                             new Headers.From(new ContentType(FilesSlice.OCTET_STREAM))
                         ),
                         auth,
@@ -150,7 +153,10 @@ public final class FilesSlice extends Slice.Wrap {
                             new RtRulePath(
                                 RtRule.FALLBACK,
                                 new SliceWithHeaders(
-                                    new SliceDownload(storage),
+                                    new FileMetaSlice(
+                                        new SliceDownload(storage),
+                                        storage
+                                    ),
                                     new Headers.From(new ContentType(FilesSlice.OCTET_STREAM))
                                 )
                             )
