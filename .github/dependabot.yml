@@ -10,7 +10,5 @@ updates:
       - "bot"
     commit-message:
       prefix: "deps"
-    assignees:
-      - "g4s8"
     schedule:
       interval: "daily"
