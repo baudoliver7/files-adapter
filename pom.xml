@@ -95,6 +95,9 @@ SOFTWARE.
       <url>https://github.com/artipie/files-adapter</url>
     </site>
   </distributionManagement>
+  <properties>
+    <qulice.license>${project.basedir}/LICENSE.header</qulice.license>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.artipie</groupId>
