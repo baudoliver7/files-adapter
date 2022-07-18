@@ -76,6 +76,19 @@ public final class FileProxySlice implements Slice {
     }
 
     /**
+     * New files proxy slice.
+     * @param clients HTTP clients
+     * @param remote Remote URI
+     * @param auth Authenticator
+     * @param cache Cache instance
+     * @checkstyle ParameterNumberCheck (500 lines)
+     */
+    public FileProxySlice(final ClientSlices clients, final URI remote,
+        final Authenticator auth, final Cache cache) {
+        this(new AuthClientSlice(new UriClientSlice(clients, remote), auth), cache);
+    }
+
+    /**
      * Ctor.
      *
      * @param remote Remote slice
